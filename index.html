@@ -725,9 +725,77 @@
         transform: scale(0.8) translate(-50%, -50%);
       }
     </style>
+    <style>
+      #splash-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 2147483000;
+        display: block;
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        border: none;
+        appearance: none;
+        cursor: pointer;
+        background: #eeeeee;
+        color: inherit;
+        font: inherit;
+        text-align: left;
+        opacity: 1;
+        transition: opacity 1.6s ease-in-out;
+      }
+      #splash-overlay img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+        pointer-events: none;
+        user-select: none;
+        -webkit-user-drag: none;
+        opacity: 1;
+        transition: opacity 1.35s ease-in-out;
+      }
+      #splash-overlay.is-phase1 img {
+        opacity: 0;
+      }
+      #splash-overlay.is-phase1,
+      #splash-overlay.is-phase2 {
+        pointer-events: none;
+      }
+      #splash-overlay.is-phase2 {
+        opacity: 0;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #splash-overlay {
+          transition-duration: 0.35s;
+        }
+        #splash-overlay img {
+          transition-duration: 0.35s;
+        }
+      }
+    </style>
   </head>
 
   <body>
+    <button
+      type="button"
+      id="splash-overlay"
+      aria-label="Enter wedding invitation"
+    >
+      <img
+        src="ab8519f8-0ddb-445f-adcb-5e2b880bf936.png"
+        alt=""
+        decoding="async"
+        fetchpriority="high"
+      />
+    </button>
+    <audio id="wedding-bg-audio" preload="auto" autoplay>
+      <source src="videoplayback.m4a" type="audio/mp4" />
+      Your browser does not support the audio element.
+    </audio>
     <div id="root">
       <div
         role="region"
@@ -1682,6 +1750,71 @@
         }
         tick();
         setInterval(tick, 3e4);
+      })();
+    </script>
+    <script>
+      (function () {
+        var a = document.getElementById("wedding-bg-audio");
+        if (!a) return;
+        function tryPlay() {
+          var p = a.play();
+          if (p && typeof p.catch === "function") p.catch(function () {});
+        }
+        tryPlay();
+        function onFirstGesture() {
+          if (a.paused) tryPlay();
+          document.removeEventListener("click", onFirstGesture);
+          document.removeEventListener("touchstart", onFirstGesture, {
+            passive: true,
+          });
+          document.removeEventListener("keydown", onFirstGesture);
+        }
+        document.addEventListener("click", onFirstGesture);
+        document.addEventListener("touchstart", onFirstGesture, {
+          passive: true,
+        });
+        document.addEventListener("keydown", onFirstGesture);
+      })();
+    </script>
+    <script>
+      (function () {
+        var el = document.getElementById("splash-overlay");
+        if (!el) return;
+        var img = el.querySelector("img");
+        document.body.style.overflow = "hidden";
+        function dismiss() {
+          if (el.classList.contains("is-phase1")) return;
+          el.classList.add("is-phase1");
+        }
+        function finish() {
+          document.body.style.overflow = "";
+          el.remove();
+        }
+        el.addEventListener("click", function (e) {
+          e.preventDefault();
+          dismiss();
+        });
+        el.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            dismiss();
+          }
+        });
+        if (img) {
+          img.addEventListener("transitionend", function onImg(e) {
+            if (e.target !== img || e.propertyName !== "opacity") return;
+            img.removeEventListener("transitionend", onImg);
+            el.classList.add("is-phase2");
+          });
+        } else {
+          el.classList.add("is-phase2");
+        }
+        el.addEventListener("transitionend", function onOverlay(e) {
+          if (e.target !== el || e.propertyName !== "opacity") return;
+          if (!el.classList.contains("is-phase2")) return;
+          el.removeEventListener("transitionend", onOverlay);
+          finish();
+        });
       })();
     </script>
   </body>
