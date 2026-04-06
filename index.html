@@ -1833,6 +1833,7 @@
         document.body.style.overflow = "hidden";
         function dismiss() {
           if (el.classList.contains("is-phase1")) return;
+          window.scrollTo({ top: 0, left: 0, behavior: "auto" });
           el.classList.add("is-phase1");
         }
         function finish() {
