@@ -1803,16 +1803,23 @@
           if (p && typeof p.catch === "function") p.catch(function () {});
         }
         tryPlay();
+        window.startWeddingBgAudio = tryPlay;
         function onFirstGesture() {
           if (a.paused) tryPlay();
           document.removeEventListener("click", onFirstGesture);
           document.removeEventListener("touchstart", onFirstGesture, {
             passive: true,
           });
+          document.removeEventListener("touchend", onFirstGesture, {
+            passive: true,
+          });
           document.removeEventListener("keydown", onFirstGesture);
         }
         document.addEventListener("click", onFirstGesture);
         document.addEventListener("touchstart", onFirstGesture, {
+          passive: true,
+        });
+        document.addEventListener("touchend", onFirstGesture, {
           passive: true,
         });
         document.addEventListener("keydown", onFirstGesture);
@@ -1832,13 +1839,20 @@
           document.body.style.overflow = "";
           el.remove();
         }
+        function unlockAudio() {
+          if (typeof window.startWeddingBgAudio === "function") {
+            window.startWeddingBgAudio();
+          }
+        }
         el.addEventListener("click", function (e) {
           e.preventDefault();
+          unlockAudio();
           dismiss();
         });
         el.addEventListener("keydown", function (e) {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
+            unlockAudio();
             dismiss();
           }
         });
