@@ -36,6 +36,31 @@
           object-position: center;
         }
       }
+      @keyframes marquee-gallery {
+        from {
+          transform: translate3d(0, 0, 0);
+        }
+        to {
+          transform: translate3d(-50%, 0, 0);
+        }
+      }
+      .gallery-marquee-track {
+        will-change: transform;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        animation: marquee-gallery 45s linear infinite;
+      }
+      .gallery-marquee-track:hover {
+        animation-play-state: paused;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .gallery-marquee-track {
+          animation: none;
+        }
+        .gallery-marquee-track > [aria-hidden="true"] {
+          display: none;
+        }
+      }
     </style>
     <title>Wedding Eka &amp; Tey</title>
     <meta name="google" content="notranslate" />
@@ -980,37 +1005,40 @@
               </div>
             </div>
           </div>
-          <div class="w-full overflow-hidden" style="opacity: 1">
+          <div class="w-full overflow-hidden pb-1" style="opacity: 1">
             <div
-                class="flex flex-row flex-wrap gap-3 md:gap-4 justify-center"
-                aria-label="Featured photos"
-              >
-                <div
-                  class="flex-shrink-0 overflow-hidden"
-                  style="height: 220px; width: 150px"
-                >
-                  <img
-                    src="wansukchin-364.JPG"
-                    alt=""
-                    draggable="false"
-                    style="object-position: center 20%"
-                  />
-                </div>
-                <div
-                  class="flex-shrink-0 overflow-hidden"
-                  style="height: 220px; width: 150px"
-                >
-                    <img
-                      src="wansukchin-309.JPG"
-                    alt=""
-                    draggable="false"
-                    style="object-position: center 55%"
-                  />
-                </div>
-            <div
-              class="flex animate-marquee gap-3 md:gap-4"
-              style="width: max-content; animation-play-state: running"
+              class="flex flex-row flex-wrap gap-3 md:gap-4 justify-center mb-6 md:mb-8"
+              aria-label="Featured photos"
             >
+              <div
+                class="flex-shrink-0 overflow-hidden rounded-sm"
+                style="height: 220px; width: 150px"
+              >
+                <img
+                  src="wansukchin-364.JPG"
+                  alt=""
+                  draggable="false"
+                  style="object-position: center 20%"
+                />
+              </div>
+              <div
+                class="flex-shrink-0 overflow-hidden rounded-sm"
+                style="height: 220px; width: 150px"
+              >
+                <img
+                  src="wansukchin-309.JPG"
+                  alt=""
+                  draggable="false"
+                  style="object-position: center 55%"
+                />
+              </div>
+            </div>
+            <div
+              class="gallery-marquee-track flex w-max gap-3 md:gap-4"
+              data-marquee-duplicate=""
+              role="presentation"
+            >
+              <div class="flex shrink-0 gap-3 md:gap-4">
               <div
                 class="flex-shrink-0 overflow-hidden"
                 style="height: 340px; width: 240px"
@@ -1130,6 +1158,7 @@
                   draggable="false"
                   style="object-position: center 35%"
                 />
+              </div>
               </div>
             </div>
           </div>
@@ -1538,11 +1567,13 @@
             class="w-24 md:w-32 h-auto opacity-80"
           />
         </div>
-        <div class="w-full overflow-hidden" style="opacity: 1">
+        <div class="w-full overflow-hidden pb-1" style="opacity: 1">
           <div
-            class="flex animate-marquee gap-3 md:gap-4"
-            style="width: max-content; animation-play-state: running"
+            class="gallery-marquee-track flex w-max gap-3 md:gap-4"
+            data-marquee-duplicate=""
+            role="presentation"
           >
+            <div class="flex shrink-0 gap-3 md:gap-4">
             <div
               class="flex-shrink-0 overflow-hidden"
               style="height: 340px; width: 240px"
@@ -1663,6 +1694,7 @@
                 style="object-position: center 35%"
               />
             </div>
+            </div>
           </div>
         </div>
         <section
@@ -1732,6 +1764,16 @@
       </main>
     </div>
 
+    <script>
+      (function () {
+        document.querySelectorAll("[data-marquee-duplicate]").forEach(function (track) {
+          if (track.children.length !== 1) return;
+          var clone = track.children[0].cloneNode(true);
+          clone.setAttribute("aria-hidden", "true");
+          track.appendChild(clone);
+        });
+      })();
+    </script>
     <script>
       (function () {
         var wedding = new Date("2026-09-14T15:00:00+02:00");
